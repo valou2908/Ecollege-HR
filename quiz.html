@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link class="icon" type="image/png" href="icone.png">
+    <link rel="icon" type="image/png" href="icone.png">
     <title>Quiz</title>
     <link rel="stylesheet" href="style.css?v=2">
 </head>
@@ -83,10 +83,7 @@
             <div id="jeu-resultat" class="hidden" style="text-align: center; padding: 20px 0;">
                 <h3 style="color: var(--primary); font-size: 1.6rem;">Quiz Terminé !</h3>
                 <p style="font-size: 1.3rem; margin: 15px 0;">Votre score : <strong id="user-score" style="color:var(--primary)">0</strong> / <strong id="total-questions">0</strong></p>
-                <div style="display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;">
-                    <button class="btn" onclick="recommencerQuiz()">Recommencer le test</button>
-                    <button class="btn" onclick="retourListe()" style="background-color: #6c757d;">Autre sujet</button>
-                </div>
+                <button class="btn" onclick="recommencerQuiz()">Recommencer le test</button>
             </div>
         </div>
     </section>
@@ -152,8 +149,6 @@ function lancerLeQuiz(urlFichier, titre) {
             document.getElementById("sect-liste").classList.add("hidden");
             document.getElementById("sect-jeu").classList.remove("hidden");
             document.getElementById("jeu-titre-quiz").innerText = titre;
-            
-            // On s'assure que la grille des questions redevienne visible si un précédent quiz s'était fini
             document.getElementById("jeu-questions").classList.remove("hidden");
             document.getElementById("jeu-resultat").classList.add("hidden");
 
@@ -220,10 +215,6 @@ function recommencerQuiz() {
 function retourListe() {
     document.getElementById("sect-liste").classList.remove("hidden");
     document.getElementById("sect-jeu").classList.add("hidden");
-    
-    // Nettoyage de sécurité pour réinitialiser les conteneurs internes
-    document.getElementById("jeu-questions").classList.remove("hidden");
-    document.getElementById("jeu-resultat").classList.add("hidden");
 }
 
 function ouvrirMdp() {
