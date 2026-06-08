@@ -1,0 +1,22 @@
+[
+    {
+        "question": "Selon vous, combien de litres d’eau ChatGPT consomme par jour ?",
+        "reponses": [
+            "150 litres",
+            "62,5 millions de litres",
+            "65 millions de litres",
+            "400 litres"
+        ],
+        "correcte": 1
+    },
+    {
+        "question": "Quelle est la consommation d’eau par an par Google ?",
+        "reponses": [
+            "57,4 millions de litres d’eau",
+            "25 millions de litres d’eau",
+            "89 millions de litres d’eau",
+            "21,2 milliards de litres d’eau"
+        ],
+        "correcte": 4
+    }
+]
