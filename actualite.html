@@ -69,7 +69,6 @@ async function initNotifications() {
 
     // Si la permission est déjà accordée, on active les services
     if (Notification.permission === "granted") {
-        configurerPush();
         ecouterNotificationsPush(); // Lancement direct si déjà autorisé
     } else if (Notification.permission === "default") {
         creerBandeauInvitation();
@@ -98,19 +97,6 @@ async function accepterNotif() {
     }
     const banner = document.getElementById("notif-banner");
     if (banner) banner.remove();
-}
-
-async function configurerPush() {
-    try {
-        const reg = await navigator.serviceWorker.ready;
-        reg.showNotification("Eco-Délégués H.R.", {
-            body: "Abonnement aux notifications activé !",
-            icon: "icone.png",
-            vibrate: [100, 50, 100]
-        });
-    } catch (e) {
-        console.error("Erreur de configuration Push:", e);
-    }
 }
 
 // Connexion en temps réel à ntfy pour recevoir les notifications instantanément
