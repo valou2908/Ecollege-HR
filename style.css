@@ -92,6 +92,11 @@ body {
     box-shadow: var(--shadow);
 }
 
+video {
+    max-width: 100%;
+    height: auto;
+}
+
 /* --- NAVIGATION MOBILE (STRICTE) --- */
 .nav-mobile {
     display: none; 

@@ -17,7 +17,5 @@ Bonjour voici ce qu'il faut savoir sur la version 1 du site :
 - Création de documentation pour le Chat.
 - Ajout d'un dossier document.
 - Fix des certain bug rencontré.
-
-A venir : 
 - Indexitation sur google.
 
