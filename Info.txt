@@ -24,4 +24,6 @@ Bonjour voici ce qu'il faut savoir sur la V1.0.1
 - Correction du problème d'affichage de tchat.html
 - Amélioration de la sécurité de FireBase
 - Raptissage de la Box Disscution
-- Remplassage de Qui nous sommes
+- Remplassage de Qui nous sommes par L'équipes dans l'espace téléphone pour un meilleure rendu
+- Remplassage de l'icone de l'actualité
+
