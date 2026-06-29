@@ -19,3 +19,7 @@ Bonjour voici ce qu'il faut savoir sur la version 1 du site :
 - Fix des certain bug rencontré.
 - Indexitation sur google.
 
+Bonjour, Aujourd'hui, j'ai patché des erreur
+
+- Correction du problème d'affichage de tchat.html
+- Amélioration de la sécurité de FireBase
