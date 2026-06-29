@@ -20,7 +20,7 @@
 
 <header class="header">
     <h1>Espace Discussion</h1>
-    <p>Échangez anonymement et librement sur des soucis observer dans la cour</p>
+    <p>Échangez anonymement et librement sur des soucis observés dans la cour</p>
 </header>
 
 <main class="container">
@@ -48,13 +48,13 @@
     <div class="container">
         <section class="chat-section">
             <h2 style="margin-bottom: 15px;">Messagerie</h2>
-            <p>Cette messagerie public et anonyme sert à signaler des comportement <strong>innaproprié au niveau écologiques</strong> au sain du collège</p>
+            <p>Cette messagerie publique et anonyme sert à signaler des comportements <strong>inappropriés au niveau écologique</strong> au sein du collège</p>
             
             <div id="chat-warning">⚠️ Attention : Votre message contenait des propos inappropriés et a été censuré.</div>
             
             <div id="chat-box">Chargement de la messagerie...</div>
             <div class="chat-input-container">
-                <input type="text" id="chat-message-input" placeholder="..." maxlength="auto">
+                <input type="text" id="chat-message-input" placeholder="..." maxlength="150">
                 <button class="btn btn-success" id="chat-send-btn">Envoyer</button>
             </div>
         </section>
@@ -73,12 +73,13 @@
     <a href="quiz.html">❓<br>Quiz</a>
     <a href="tchat.html" class="active">💬<br>Discussion</a>
     <a href="objectifs.html">🏆<br>Objectifs</a>
-    <a href="noussommes.html">👥<br>Qui sommes nous</a>
+    <a href="noussommes.html">👥<br>Qui sommes-nous</a>
 </nav>
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-app.js";
     import { getDatabase, ref, push, onValue, serverTimestamp, query, get, remove } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-database.js";
+    import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-auth.js";
     
     import { motsInterdits } from "./mot_censured.js";
 
@@ -95,9 +96,19 @@
 
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
+    const auth = getAuth(app);
     const messagesRef = ref(db, 'messages');
 
+    let isAdminAuthenticated = false;
     const anonymousName = "Anonyme_" + Math.floor(1000 + Math.random() * 9000);
+
+    signInAnonymously(auth)
+        .then(() => {
+            console.log("Authentification anonyme active.");
+        })
+        .catch((error) => {
+            console.error("Erreur d'authentification :", error);
+        });
 
     onValue(messagesRef, (snapshot) => {
         const chatBox = document.getElementById("chat-box");
@@ -117,18 +128,24 @@
                 msgElement.innerHTML = `<div><span class="chat-author">${msg.user}</span><span class="chat-text">${msg.text}</span></div>`;
                 chatBox.appendChild(msgElement);
 
-                const adminElement = document.createElement("div");
-                adminElement.className = "admin-msg-item";
-                adminElement.innerHTML = `
-                    <span><strong>${msg.user}:</strong> ${msg.text}</span>
-                    <button class="btn btn-danger" style="padding:4px 8px; font-size:0.75rem; background:#dc3545;" data-id="${key}">Supprimer</button>
-                `;
-                adminMsgList.appendChild(adminElement);
+                if (isAdminAuthenticated) {
+                    const adminElement = document.createElement("div");
+                    adminElement.className = "admin-msg-item";
+                    adminElement.innerHTML = `
+                        <span><strong>${msg.user}:</strong> ${msg.text}</span>
+                        <button class="btn btn-danger" style="padding:4px 8px; font-size:0.75rem; background:#dc3545;" data-id="${key}">Supprimer</button>
+                    `;
+                    adminMsgList.appendChild(adminElement);
+                }
             });
             
-            adminMsgList.querySelectorAll('.btn-danger').forEach(btn => {
-                btn.onclick = () => supprimerMessageUnique(btn.getAttribute('data-id'));
-            });
+            if (isAdminAuthenticated) {
+                adminMsgList.querySelectorAll('.btn-danger').forEach(btn => {
+                    btn.onclick = () => supprimerMessageUnique(btn.getAttribute('data-id'));
+                });
+            } else {
+                adminMsgList.innerHTML = "<p style='color:#666; font-style:italic;'>Verrouillé - Entrez le code d'accès.</p>";
+            }
 
             chatBox.scrollTop = chatBox.scrollHeight; 
         } else {
@@ -183,6 +200,7 @@
     }
 
     function supprimerMessageUnique(messageId) {
+        if (!isAdminAuthenticated) return;
         const specificRef = ref(db, `messages/${messageId}`);
         remove(specificRef).catch(() => {
             alert("Erreur lors de la suppression.");
@@ -190,6 +208,7 @@
     }
 
     function supprimerToutLeChat() {
+        if (!isAdminAuthenticated) return;
         if(confirm("💥 ATTENTION : Tu vas effacer INTÉGRALEMENT l'historique de la messagerie. Continuer ?")) {
             remove(messagesRef).then(() => {
                 alert("La base de données a été réinitialisée avec succès !");
@@ -209,8 +228,10 @@
     function verifier() {
         const input = document.getElementById("mdp").value;
         if (btoa(input) === SECRET) {
+            isAdminAuthenticated = true;
             document.getElementById("zone-publi").style.display = "block";
             document.getElementById("zone-mdp").style.display = "none";
+            location.reload(); 
         } else { 
             alert("Code incorrect"); 
         }
