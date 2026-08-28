@@ -26,33 +26,47 @@
 
 <main class="container">
     <section class="card">
-        <h2>Bienvenue sur votre plateforme</h2>
+        <h2>Bienvenue sur la platforme des éco-délégués du collège</h2>
         <p>Découvrez les projets des élèves pour transformer notre établissement.</p>
 
-        <div style="background: #fff3f3; border-left: 5px solid #d32f2f; padding: 15px; border-radius: 8px; margin: 20px 0;">
-            <h3 style="color: #d32f2f; margin-top: 0; font-size: 1.1rem;">📢 Message urgent</h3>
-            <p style="margin: 0;">Merci de respecter notre cour de récréation en ne jetant pas vos déchets au sol.</p>
-        </div>
+        <!-- Les blocs texte/vidéo s'affichent ici -->
+        <div id="blocs-affichage"></div>
+    </section>
 
-        <h3>Voici une petite vidéo récapitulative des déchets dans la cour :</h3>
-            
-        <div style="border-radius: 15px; overflow: hidden; box-shadow: var(--shadow); background: #000; margin-top: 15px; margin-bottom: 30px;">
-            <video controls style="width: 100%; display: block;"> 
-                <source src="./video/diapodechet.mp4" type="video/mp4">
-                Votre navigateur ne supporte pas la lecture de cette vidéo.
-            </video>
-        </div>
+    <!-- ESPACE ADMIN -->
+    <div class="hidden" style="margin-top:20px; background: var(--card-bg); padding: 30px; border-radius: 15px; box-shadow: var(--shadow);" id="git-acc">
+                <h2>Étape 2 : configuration de la nouvelle disposition</h2>
+                <br><a class="btn btn-add-question" href="https://github.com/valou2908/Ecollege-HR">Accéder à l'éditeur GitHub</a>
+                <br><span id="statut-acc" style="margin-left:10px;font-size:0.7rem;"></span>
+    </div>
 
-        <div style="background: #ebf8ec; border-left: 5px solid #2e7d32; padding: 15px; border-radius: 8px; margin: 20px 0;">
-            <h3 style="color: #2e7d32; margin-top: 0; font-size: 1.1rem;">Petite vidéo de la sortie du 4 juin 2026</h3>
-            <p style="margin: 0;">Bonjour, voici une petite vidéo avec des photos de notre sortie.</p>
-        </div>
+    <br><footer id="btn-admin-acc" style="text-align: center; padding: 7px; font-size: 0.8rem; color: #7f8c8d; margin-bottom: 80px;">    
+        <a onclick="ouvrirMdpAcc()">modifier</a>
+    </footer>
 
-        <div style="border-radius: 15px; overflow: hidden; box-shadow: var(--shadow); background: #000; margin-top: 15px; margin-bottom: 15px;">
-            <video controls style="width: 100%; display: block;"> 
-                <source src="./video/BaseeS.mp4" type="video/mp4">
-                Votre navigateur ne supporte pas la lecture de cette vidéo.
-            </video>
+    <div id="zone-mdp-acc" class="hidden" style="margin-top:15px;">
+    <section class="card">
+        <h2>Accès Modification</h2>
+        <p style="font-size: 0.9rem; color: #666;">Réservé aux membres des éco-délégués de H.R. pour Modifier.</p>
+
+        <input type="password" id="mdp-acc" placeholder="Code d'accès…" class="mdp-input" style="margin-top: 20px; width: 80%;">
+        <button class="btn" onclick="verifierAcc()" style="width: 15%;">Valider</button>
+    </section>
+</div>
+
+        <div id="zone-edit-acc" class="hidden" style="margin-top:20px; background: var(--card-bg); padding: 30px; border-radius: 15px; box-shadow: var(--shadow);">
+
+            <h3 style="margin: 0px 0 10px; color: var(--primary);"><h2>Étape 1 : préparation de la nouvelle disposition</h2></h3>
+            <a href="./document/Guide Écollége HR.pdf" download="Guide Écollége HR.pdf" style="color: #090909; text-decoration: underline;">Manuel d'utilisation des pages Web</a><br>
+            <br><div id="blocs-edition"></div>
+
+            <div class="generateur-actions">
+                <button class="btn btn-add-question" onclick="ajouterBlocVide('texte')">+ Ajouter un bloc texte</button>
+                <button class="btn btn-add-question" onclick="ajouterBlocVide('video')">+ Ajouter un bloc vidéo</button>
+            </div>
+
+            <div class="form-group" style="margin-top:20px;">
+            <br><button class="btn btn-success" onclick="enregistrerAcc()">Enregistrer</button>
         </div>
     </section>
 </main>
@@ -67,6 +81,7 @@
 </nav>
 
 <script>
+// --- BADGE ACTUALITÉ ---
 async function verifierBadge() {
     try {
         const res = await fetch("https://api.github.com/repos/valou2908/EcoApp/issues?per_page=10");
@@ -77,9 +92,157 @@ async function verifierBadge() {
                 document.querySelectorAll('.badge').forEach(b => b.style.display = 'inline-block');
             }
         }
-    } catch (e) { console.log("Erreur badge"); }
+    } catch (e) { console.log("Erreur badge (normal en local sans internet)"); }
 }
-window.onload = verifierBadge;
+
+// --- CONTENU MODIFIABLE ---
+const SECRET_ACC = "RWNvMjAyNS8yNg==";
+let contenuActuelAcc = { blocs: [] };
+let compteurBloc = 0;
+
+async function chargerContenuAcc() {
+    try {
+        const res = await fetch("content/accueil.json?t=" + Date.now(), { cache: "no-store" });
+        if (!res.ok) throw new Error("Fichier introuvable, statut " + res.status);
+        contenuActuelAcc = await res.json();
+        if (!Array.isArray(contenuActuelAcc.blocs)) contenuActuelAcc.blocs = [];
+
+        afficherBlocs(contenuActuelAcc.blocs);
+
+        document.getElementById("blocs-edition").innerHTML = "";
+        contenuActuelAcc.blocs.forEach(bloc => ajouterBlocFormulaire(bloc.type, bloc));
+
+    } catch (e) {
+        console.error("Erreur chargement content/accueil.json :", e);
+    }
+}
+
+// --- AFFICHAGE PUBLIC DES BLOCS ---
+function afficherBlocs(blocs) {
+    const zone = document.getElementById("blocs-affichage");
+    zone.innerHTML = "";
+    blocs.forEach(bloc => {
+        if (bloc.type === "video") {
+            const div = document.createElement("div");
+            div.innerHTML = `
+                ${bloc.titre ? `<h3>${bloc.titre}</h3>` : ""}
+                <div style="border-radius: 15px; overflow: hidden; box-shadow: var(--shadow); background: #000; margin-top: 15px; margin-bottom: 30px;">
+                    <video controls style="width: 100%; display: block;">
+                        <source src="${bloc.src}" type="video/mp4">
+                        Votre navigateur ne supporte pas la lecture de cette vidéo.
+                    </video>
+                </div>
+            `;
+            zone.appendChild(div);
+        } else if (bloc.type === "texte") {
+            const div = document.createElement("div");
+            div.style = "background: #ebf8ec; border-left: 5px solid #2e7d32; padding: 15px; border-radius: 8px; margin: 20px 0;";
+            div.innerHTML = `
+                ${bloc.titre ? `<h3 style="color: #2e7d32; margin-top: 0; font-size: 1.1rem;">${bloc.titre}</h3>` : ""}
+                <p style="margin: 0;">${bloc.texte || ""}</p>
+            `;
+            zone.appendChild(div);
+        }
+    });
+}
+
+// --- FORMULAIRE ADMIN : GESTION DES BLOCS ---
+function ajouterBlocFormulaire(type, data = {}) {
+    compteurBloc++;
+    const id = "bloc-" + compteurBloc;
+    const zone = document.getElementById("blocs-edition");
+
+    const div = document.createElement("div");
+    div.className = "question-bloc";
+    div.id = id;
+    div.dataset.type = type;
+
+    if (type === "video") {
+        div.innerHTML = `
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+                <strong>🎬 Bloc vidéo</strong>
+                <button class="btn btn-danger" style="padding:4px 10px;font-size:0.85rem;" onclick="document.getElementById('${id}').remove()">Supprimer</button>
+            </div>
+            <div class="form-group"><label>Titre (optionnel)</label><input class="b-titre" value="${data.titre || ""}"></div>
+            <div class="form-group"><label>Chemin du fichier vidéo</label><input class="b-src" value="${data.src || ""}" placeholder="./video/exemple.mp4"></div>
+        `;
+    } else {
+        div.innerHTML = `
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+                <strong>📝 Bloc texte</strong>
+                <button class="btn btn-danger" style="padding:4px 10px;font-size:0.85rem;" onclick="document.getElementById('${id}').remove()">Supprimer</button>
+            </div>
+            <div class="form-group"><label>Titre (optionnel)</label><input class="b-titre" value="${data.titre || ""}"></div>
+            <div class="form-group"><label>Texte</label><textarea class="b-texte">${data.texte || ""}</textarea></div>
+        `;
+    }
+    zone.appendChild(div);
+}
+
+function ajouterBlocVide(type) {
+    ajouterBlocFormulaire(type, {});
+}
+
+function ouvrirMdpAcc() {
+    document.getElementById("zone-mdp-acc").classList.remove("hidden");
+    document.getElementById("btn-admin-acc").style.display = "none";
+}
+
+function verifierAcc() {
+    const input = document.getElementById("mdp-acc").value;
+    if (btoa(input) === SECRET_ACC) {
+        document.getElementById("zone-edit-acc").classList.remove("hidden");
+        document.getElementById("zone-mdp-acc").classList.add("hidden");
+    } else {
+        alert("Code incorrect");
+    }
+}
+
+// --- ENREGISTREMENT ---
+function enregistrerAcc() {
+    const nouveauContenu = {
+        blocs: []
+    };
+
+    document.querySelectorAll("#blocs-edition .question-bloc").forEach(div => {
+        const type = div.dataset.type;
+        const titre = div.querySelector(".b-titre").value;
+
+        if (type === "video") {
+            nouveauContenu.blocs.push({
+                type: "video",
+                titre: titre,
+                src: div.querySelector(".b-src").value
+            });
+        } else {
+            nouveauContenu.blocs.push({
+                type: "texte",
+                titre: titre,
+                texte: div.querySelector(".b-texte").value
+            });
+        }
+    });
+
+    console.log("Contenu à enregistrer :", nouveauContenu);
+
+    const blob = new Blob([JSON.stringify(nouveauContenu, null, 2)], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "accueil.json";
+    a.click();
+    URL.revokeObjectURL(url);
+
+    document.getElementById("statut-acc").textContent = "Votre fichiers de configuration a été télécharger sur votre ordinateur — remplacez content/accueil.json avec le même nom par ce fichier.";
+    document.getElementById("git-acc").classList.remove("hidden");
+    document.getElementById("zone-edit-acc").classList.add("hidden");
+
+}
+
+window.onload = () => {
+    verifierBadge();
+    chargerContenuAcc();
+};
 </script>
 </body>
 </html>

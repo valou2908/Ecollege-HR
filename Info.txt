@@ -27,3 +27,9 @@ Bonjour voici ce qu'il faut savoir sur la V1.0.1
 - Remplassage de Qui nous sommes par L'équipes dans l'espace téléphone pour un meilleure rendu
 - Remplassage de l'icone de l'actualité
 
+Bonjour voici ce qu'il faut savoir sur la V1.1
+
+- Ajouts de "Modification manuel de index"
+- Corection Espace Modification et de la taille de la fenêtre messagerie
+- Ajouts du site web dans le moteur de recherche bing
+- Version android stable
