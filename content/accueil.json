@@ -1,0 +1,24 @@
+{
+  "blocs": [
+    {
+      "type": "texte",
+      "titre": "📢 Message urgent",
+      "texte": "Merci de respecter notre cour de récréation en ne jetant pas vos déchets au sol."
+    },
+    {
+      "type": "video",
+      "titre": "Voici une petite vidéo récapitulative des déchets dans la cour :",
+      "src": "./video/diapodechet.mp4"
+    },
+    {
+      "type": "texte",
+      "titre": "Petite vidéo de la sortie du 4 juin 2026",
+      "texte": "Bonjour, voici une petite vidéo avec des photos de notre sortie."
+    },
+    {
+      "type": "video",
+      "titre": "",
+      "src": "./video/BaseeS.mp4"
+    }
+  ]
+}
